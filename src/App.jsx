@@ -1,23 +1,45 @@
 import React from "react";
-import { SignIn, SignUp, SignedIn, SignedOut, UserButton } from "@clerk/clerk-react";
+import { SignIn, SignedIn, SignedOut, RedirectToSignIn } from "@clerk/clerk-react";
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import './App.css'
+import Homepage from "./components/Homepage";
 
 const App = () => {
   return (
-    <div style={{ textAlign: "center", padding: "20px" }}>
-      <h1>Welcome to My Clerk App</h1>
-
-      {/* Show SignIn or SignUp when signed out */}
-      <SignedOut>
-        <SignIn />
-      </SignedOut>
-
-      {/* Show user info when signed in */}
-      <SignedIn>
-        <h2>You are signed in!</h2>
-        <UserButton />
-      </SignedIn>
-    </div>
+    <BrowserRouter>
+      <Routes>
+        <Route
+          path="/"
+          element={
+            <>
+              <SignedOut>
+                <RedirectToSignIn />
+              </SignedOut>
+              <SignedIn>
+                <Navigate to="/homepage" replace />
+              </SignedIn>
+            </>
+          }
+        />
+        <Route
+          path="/sign-in/*"
+          element={<SignIn routing="path" path="/sign-in" />}
+        />
+        <Route
+          path="/homepage"
+          element={
+            <>
+              <SignedOut>
+                <RedirectToSignIn />
+              </SignedOut>
+              <SignedIn>
+                <Homepage />
+              </SignedIn>
+            </>
+          }
+        />
+      </Routes>
+    </BrowserRouter>
   );
 };
 

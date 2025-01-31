@@ -1,0 +1,23 @@
+*{
+  margin: 0;
+  padding: 0;
+}
+/* Homepage.css */
+@media screen and (max-width: 1024px) {
+  .content {
+    grid-template-columns: 1fr !important;
+    padding: 90px 20px 20px 20px !important;
+  }
+}
+
+@media screen and (max-width: 768px) {
+  .quiz-buttons {
+    grid-template-columns: 1fr !important;
+  }
+}
+
+.quiz-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 12px rgba(0,0,0,0.15);
+  background-color: #f8f8f8;
+}
