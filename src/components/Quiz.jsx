@@ -184,10 +184,12 @@ const Quiz = () => {
         <div className="options">
           {currentQuestion.options.map((option, index) => {
             let optionClass = 'quiz-button';
-            if (showAnswer && option === selectedOption) {
-              optionClass += option === currentQuestion.correctAnswer ? ' correct' : ' incorrect';
-            } else if (showAnswer && option === currentQuestion.correctAnswer) {
-              optionClass += ' correct';
+            if (showAnswer) {
+              if (option === currentQuestion.correctAnswer) {
+                optionClass += ' correct';
+              } else if (option === selectedOption) {
+                optionClass += ' incorrect';
+              }
             }
             
             return (
@@ -198,9 +200,10 @@ const Quiz = () => {
                 disabled={showAnswer}
               >
                 {option}
-                {showAnswer && option === selectedOption && (
+                {showAnswer && (
                   <span className="answer-icon">
-                    {option === currentQuestion.correctAnswer ? '✓' : '✗'}
+                    {option === currentQuestion.correctAnswer ? '✓' : 
+                     option === selectedOption ? '✗' : ''}
                   </span>
                 )}
               </button>
