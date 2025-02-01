@@ -13,6 +13,8 @@ const Quiz = () => {
   const [error, setError] = useState(null);
   const [showResults, setShowResults] = useState(false);
   const [score, setScore] = useState(0);
+  const [selectedOption, setSelectedOption] = useState(null);
+  const [showAnswer, setShowAnswer] = useState(false);
 
   useEffect(() => {
     const fetchQuestions = async () => {
@@ -35,23 +37,33 @@ const Quiz = () => {
   }, [topic]);
 
   const handleAnswer = (selectedAnswer) => {
-    const newAnswers = [...answers];
-    newAnswers[currentQuestionIndex] = selectedAnswer;
-    setAnswers(newAnswers);
+    setSelectedOption(selectedAnswer);
+    setShowAnswer(true);
 
-    if (currentQuestionIndex < questions.length - 1) {
-      setCurrentQuestionIndex(currentQuestionIndex + 1);
-    } else {
-      // Calculate score
-      let correctAnswers = 0;
-      newAnswers.forEach((answer, index) => {
-        if (answer === questions[index].correctAnswer) {
-          correctAnswers++;
-        }
-      });
-      setScore(correctAnswers);
-      setShowResults(true);
-    }
+    const currentQuestion = questions[currentQuestionIndex];
+    const isCorrect = selectedAnswer === currentQuestion.correctAnswer;
+
+    setTimeout(() => {
+      const newAnswers = [...answers];
+      newAnswers[currentQuestionIndex] = selectedAnswer;
+      setAnswers(newAnswers);
+
+      if (currentQuestionIndex < questions.length - 1) {
+        setCurrentQuestionIndex(currentQuestionIndex + 1);
+        setSelectedOption(null);
+        setShowAnswer(false);
+      } else {
+        // Calculate score
+        let correctAnswers = 0;
+        newAnswers.forEach((answer, index) => {
+          if (answer === questions[index].correctAnswer) {
+            correctAnswers++;
+          }
+        });
+        setScore(correctAnswers);
+        setShowResults(true);
+      }
+    }, 1500); // Show correct/incorrect for 1.5 seconds before moving to next question
   };
 
   const handleRetry = () => {
@@ -61,6 +73,8 @@ const Quiz = () => {
     setLoading(true);
     setError(null);
     setQuestions([]);
+    setSelectedOption(null);
+    setShowAnswer(false);
     window.location.reload();
   };
 
@@ -97,20 +111,45 @@ const Quiz = () => {
       <div className="quiz-container">
         <h2 className="topic-title">Quiz Results</h2>
         <div className="results">
-          <h3>Score: {score} out of {questions.length}</h3>
-          <p>Percentage: {((score / questions.length) * 100).toFixed(2)}%</p>
-          {score === questions.length && (
-            <p style={{ color: '#4CAF50' }}>Perfect score! Excellent work! 🎉</p>
-          )}
-          {score >= questions.length * 0.7 && score < questions.length && (
-            <p style={{ color: '#8BC34A' }}>Great job! Keep it up! 👏</p>
-          )}
-          {score >= questions.length * 0.5 && score < questions.length * 0.7 && (
-            <p style={{ color: '#FFC107' }}>Good effort! Room for improvement. 💪</p>
-          )}
-          {score < questions.length * 0.5 && (
-            <p style={{ color: '#FF5722' }}>Keep practicing! You'll get better. 📚</p>
-          )}
+          <div className="score-circle">
+            <div className="score-number">{score}</div>
+            <div className="score-text">out of {questions.length}</div>
+          </div>
+          <div className="score-details">
+            <div className="percentage">
+              {((score / questions.length) * 100).toFixed(0)}%
+            </div>
+            {score === questions.length && (
+              <p className="feedback perfect">Perfect score! Excellent work! 🎉</p>
+            )}
+            {score >= questions.length * 0.7 && score < questions.length && (
+              <p className="feedback great">Great job! Keep it up! 👏</p>
+            )}
+            {score >= questions.length * 0.5 && score < questions.length * 0.7 && (
+              <p className="feedback good">Good effort! Room for improvement. 💪</p>
+            )}
+            {score < questions.length * 0.5 && (
+              <p className="feedback needs-practice">Keep practicing! You'll get better. 📚</p>
+            )}
+          </div>
+          <div className="answers-review">
+            <h3>Review Your Answers</h3>
+            {questions.map((question, index) => (
+              <div key={index} className="review-item">
+                <p className="review-question">
+                  <span className="question-number">{index + 1}.</span> {question.question}
+                </p>
+                <p className={`review-answer ${answers[index] === question.correctAnswer ? 'correct' : 'incorrect'}`}>
+                  Your answer: {answers[index]}
+                  {answers[index] !== question.correctAnswer && (
+                    <span className="correct-answer">
+                      Correct answer: {question.correctAnswer}
+                    </span>
+                  )}
+                </p>
+              </div>
+            ))}
+          </div>
           <div className="action-buttons">
             <button onClick={handleRetry}>Try Again</button>
             <button onClick={handleBackToHome}>Back to Home</button>
@@ -143,15 +182,30 @@ const Quiz = () => {
         </p>
         <p className="question-text">{currentQuestion.question}</p>
         <div className="options">
-          {currentQuestion.options.map((option, index) => (
-            <button
-              key={index}
-              onClick={() => handleAnswer(option)}
-              className="quiz-button"
-            >
-              {option}
-            </button>
-          ))}
+          {currentQuestion.options.map((option, index) => {
+            let optionClass = 'quiz-button';
+            if (showAnswer && option === selectedOption) {
+              optionClass += option === currentQuestion.correctAnswer ? ' correct' : ' incorrect';
+            } else if (showAnswer && option === currentQuestion.correctAnswer) {
+              optionClass += ' correct';
+            }
+            
+            return (
+              <button
+                key={index}
+                onClick={() => !showAnswer && handleAnswer(option)}
+                className={optionClass}
+                disabled={showAnswer}
+              >
+                {option}
+                {showAnswer && option === selectedOption && (
+                  <span className="answer-icon">
+                    {option === currentQuestion.correctAnswer ? '✓' : '✗'}
+                  </span>
+                )}
+              </button>
+            );
+          })}
         </div>
       </div>
     </div>
