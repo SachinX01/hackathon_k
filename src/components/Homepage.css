@@ -1,12 +1,162 @@
 *{
   margin: 0;
   padding: 0;
+  box-sizing: border-box;
 }
 /* Homepage.css */
+
+body, html {
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+  height: 100%;
+}
+
+.homepage {
+  background: linear-gradient(135deg, #1a0024 0%, #380049 100%);
+  position: relative;
+  overflow: hidden;
+  min-height: 100vh;
+  width: 100vw;
+  margin: 0;
+  padding: 0;
+}
+
+.homepage::before {
+  content: '';
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  background-image: radial-gradient(circle at center, white 1px, transparent 1px);
+  background-size: 50px 50px;
+  opacity: 0.1;
+  animation: twinkle 8s infinite linear;
+}
+
+@keyframes twinkle {
+  0% { opacity: 0.1; }
+  50% { opacity: 0.2; }
+  100% { opacity: 0.1; }
+}
+
+.neon-container {
+  border: 3px solid #4d004d !important;
+  box-shadow: 0 0 8px #4d004d,
+              0 0 15px #b366cc,
+              inset 0 0 8px #4d004d !important;
+  background: rgba(26, 0, 33, 0.8) !important;
+  backdrop-filter: blur(5px);
+}
+
+.neon-container h2 {
+  color: white;
+  text-shadow: 0 0 8px #b366cc;
+  font-size: 2rem;
+}
+
+.quiz-container {
+  border: 3px solid #4d004d !important;
+  box-shadow: 0 0 8px #4d004d,
+              0 0 15px #b366cc,
+              inset 0 0 8px #4d004d !important;
+  background: rgba(26, 0, 33, 0.8) !important;
+  backdrop-filter: blur(5px);
+}
+
+/* Helpline marquee styles */
+.marquee-container {
+  position: relative;
+  overflow: hidden;
+}
+
+.marquee-content {
+  position: absolute;
+  width: 100%;
+  animation: scrollUp 20s linear infinite;
+  display: flex;
+  flex-direction: column;
+}
+
+.marquee-content:hover {
+  animation-play-state: paused;
+}
+
+.helpline-item {
+  padding: 15px;
+  text-align: center;
+  color: white;
+  margin-bottom: 20px;
+  flex-shrink: 0;
+  cursor: pointer;
+}
+
+.helpline-item:hover {
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 8px;
+}
+
+.helpline-item p {
+  margin: 5px 0;
+  font-size: 1.1rem;
+  opacity: 0.9;
+}
+
+.helpline-link {
+  color: #b366cc;
+  text-decoration: none;
+  transition: color 0.3s ease;
+  display: block;
+  margin: 5px 0;
+  font-size: 1.1rem;
+}
+
+.helpline-link:hover {
+  color: #d9b3ff;
+  text-shadow: 0 0 8px #b366cc;
+}
+
+@keyframes scrollUp {
+  from {
+    transform: translateY(0);
+  }
+  to {
+    transform: translateY(-50%);
+  }
+}
+
+.quiz-button {
+  background: rgba(255, 255, 255, 0.1) !important;
+  border: 1px solid #b366cc !important;
+  color: white !important;
+  box-shadow: 0 0 3px #b366cc,
+              inset 0 0 3px #b366cc !important;
+  transition: all 0.3s ease !important;
+}
+
+.quiz-button:hover {
+  background: rgba(255, 255, 255, 0.15) !important;
+  box-shadow: 0 0 8px #b366cc,
+              inset 0 0 5px #b366cc !important;
+  transform: translateY(-2px) !important;
+}
+
+.content {
+  padding: 50px 0 0 0 !important;
+  margin: 0 !important;
+  width: 100% !important;
+}
+
+/* Media Queries */
 @media screen and (max-width: 1024px) {
   .content {
-    grid-template-columns: 1fr !important;
-    padding: 90px 20px 20px 20px !important;
+    flex-direction: column !important;
+    padding: 50px 0 0 0 !important;
+  }
+  
+  .left-column,
+  .neon-container {
+    width: 100% !important;
+    margin: 0 !important;
   }
 }
 
@@ -14,10 +164,4 @@
   .quiz-buttons {
     grid-template-columns: 1fr !important;
   }
-}
-
-.quiz-button:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 6px 12px rgba(0,0,0,0.15);
-  background-color: #f8f8f8;
 }
