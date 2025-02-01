@@ -1,11 +1,37 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { UserButton } from "@clerk/clerk-react";
+import { useNavigate } from 'react-router-dom';
 import './Homepage.css';
 
+const API_KEY = '9a91365717424d89bf1f783f2645745f';
+
 const Homepage = () => {
-  const handleQuizClick = (quizNumber) => {
-    console.log(`Quiz ${quizNumber} clicked`);
-    // Add your quiz logic here
+  const navigate = useNavigate();
+  const [articles, setArticles] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchNews = async () => {
+      try {
+        const response = await fetch(
+          `https://newsapi.org/v2/everything?q=cybersecurity&sortBy=publishedAt&language=en&pageSize=5&apiKey=${API_KEY}`
+        );
+        const data = await response.json();
+        if (data.status === 'ok') {
+          setArticles(data.articles);
+        }
+      } catch (error) {
+        console.error('Error fetching news:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchNews();
+  }, []);
+
+  const handleQuizClick = (topic) => {
+    navigate(`/quiz/${topic.toLowerCase()}`);
   };
 
   return (
@@ -62,11 +88,62 @@ const Homepage = () => {
             borderRadius: "15px",
             height: "calc(50% - 10px)",
             display: "flex",
+            flexDirection: "column",
             alignItems: "center",
-            justifyContent: "center",
-            margin: 0
+            margin: 0,
+            overflow: "hidden",
+            padding: "20px"
           }}>
-            <h2>Article</h2>
+            <h2 style={{
+              marginBottom: "20px",
+              color: "#fff",
+              textShadow: "0 0 8px #b366cc"
+            }}>Articles</h2>
+            
+            <div className="articles-container" style={{
+              width: "100%",
+              height: "100%",
+              overflowY: "auto",
+              padding: "10px"
+            }}>
+              {loading ? (
+                <div className="loading-spinner"></div>
+              ) : (
+                articles.map((article, index) => (
+                  <div key={index} className="article-card" style={{
+                    background: "rgba(0, 0, 0, 0.3)",
+                    borderRadius: "10px",
+                    padding: "15px",
+                    marginBottom: "15px",
+                    border: "1px solid rgba(255, 255, 255, 0.1)",
+                    transition: "transform 0.3s ease",
+                    cursor: "pointer"
+                  }}
+                  onClick={() => window.open(article.url, '_blank')}
+                  >
+                    <h3 style={{
+                      fontSize: "1rem",
+                      marginBottom: "10px",
+                      color: "#fff"
+                    }}>{article.title}</h3>
+                    <p style={{
+                      fontSize: "0.9rem",
+                      color: "rgba(255, 255, 255, 0.7)",
+                      marginBottom: "10px"
+                    }}>{article.description?.slice(0, 100)}...</p>
+                    <div style={{
+                      fontSize: "0.8rem",
+                      color: "rgba(255, 255, 255, 0.5)",
+                      display: "flex",
+                      justifyContent: "space-between"
+                    }}>
+                      <span>{article.source.name}</span>
+                      <span>{new Date(article.publishedAt).toLocaleDateString()}</span>
+                    </div>
+                  </div>
+                ))
+              )}
+            </div>
           </div>
 
           <div className="neon-container" style={{
@@ -183,11 +260,18 @@ const Homepage = () => {
             padding: "0",
             margin: 0
           }}>
-            {[1, 2, 3, 4, 5, 6].map((num) => (
+            {[
+              'Phishing',
+              'Pretexting',
+              'Baiting',
+              'Diversion Theft',
+              'Vishing',
+              'Whaling'
+            ].map((topic, index) => (
               <button
-                key={num}
+                key={index}
                 className="quiz-button"
-                onClick={() => handleQuizClick(num)}
+                onClick={() => handleQuizClick(topic)}
                 style={{
                   padding: "20px",
                   fontSize: "1.2rem",
@@ -199,10 +283,11 @@ const Homepage = () => {
                   justifyContent: "center",
                   fontWeight: "500",
                   borderRadius: "10px",
-                  margin: 0
+                  margin: 0,
+                  textTransform: "capitalize"
                 }}
               >
-                Quiz {num}
+                {topic}
               </button>
             ))}
           </div>

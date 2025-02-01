@@ -3,6 +3,7 @@ import { SignIn, SignedIn, SignedOut, RedirectToSignIn } from "@clerk/clerk-reac
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import './App.css'
 import Homepage from "./components/Homepage";
+import Quiz from "./components/Quiz";
 
 const App = () => {
   return (
@@ -34,6 +35,19 @@ const App = () => {
               </SignedOut>
               <SignedIn>
                 <Homepage />
+              </SignedIn>
+            </>
+          }
+        />
+        <Route
+          path="/quiz/:topic"
+          element={
+            <>
+              <SignedOut>
+                <RedirectToSignIn />
+              </SignedOut>
+              <SignedIn>
+                <Quiz />
               </SignedIn>
             </>
           }
